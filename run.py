@@ -37,7 +37,8 @@ def incoming_sms():
         client.messages.create(body=chase_resp,from_=twilio_number, to=fmo)
         
     elif body in ['Help', 'help']:
-        bud.Help()
+        chase_resp = bud.Help()
+        client.messages.create(body=chase_resp,from_=twilio_number, to=fmo)
         
     elif " ".join(body.split()[0:2]) == "Chase account":
         chase_resp = bud.Received_Bank_text()

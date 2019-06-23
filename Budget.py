@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# Needs to be executable and Crontab-ed
 
 import yaml
 from pathlib import Path
@@ -12,30 +11,18 @@ CURRENT_DATETIME = date.today()
 CURRENT_DATE = CURRENT_DATETIME.strftime("%b-%d-%Y")
 CURRENT_DATE_VAR = CURRENT_DATETIME.strftime("%A-%m-%d")
 
+if CURRENT_DATETIME.weekday() == 6:
+    LAST_SUNDAY = CURRENT_DATETIME
+else:
+    LAST_SUNDAY = CURRENT_DATETIME - datetime.timedelta(days=CURRENT_DATETIME.weekday()+1)
+
+LAST_SUNDAY_DATE = LAST_SUNDAY.strftime("%b-%d-%Y")
+
 # Creates the final file with extension string
-CURRENT_DATE_YAML = CURRENT_DATE + ".yaml"
+SUNDAY_DATE_YAML = LAST_SUNDAY_DATE + ".yaml"
 
 GROCERIES_WK_BUDGET = 100
 OTHER_WK_BUDGET = 250
-
-# Needs to be changed to correct path
-# path = Path.home().joinpath('Documents', 'f-mo', 'Twilio_App', 'Weekly_Charges', f'{CURRENT_DATE_YAML}')
-
-# def Received_Bank_text(body):
-#     chase_list = body.split()
-#     amount = chase_list[6][1:]
-#     date = datetime.strptime(chase_list[-11], '%m/%d/%Y')
-#     business = " ".join(chase_list[8:-12])
-
-#     charge_date = date.strftime("%A-%m-%d")
-
-#     with path.open(mode='r') as fid:
-#         charges = yaml.safe_load(fid)
-
-#     charges[charge_date].append(amount)
-
-#     with path.open(mode='w') as fid:
-#         yaml.safe_dump(charges, fid, default_flow_style=False)
 
 class Budget(object):
 
@@ -43,7 +30,7 @@ class Budget(object):
                                     'f-mo',
                                     'Twilio_App',
                                     'Weekly_Charges',
-                                    f'{CURRENT_DATE_YAML}')
+                                    f'{SUNDAY_DATE_YAML}')
     def __init__(self, body):
         self.body = body
 
