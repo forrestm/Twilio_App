@@ -36,7 +36,7 @@ def incoming_sms():
         chase_resp = bud.Current_Amounts(True)
         client.messages.create(body=chase_resp,from_=twilio_number, to=fmo)
         
-    elif body in ['Help', 'help']:
+    elif body in ['H?', 'h?']:
         chase_resp = bud.Help()
         client.messages.create(body=chase_resp,from_=twilio_number, to=fmo)
         
@@ -48,7 +48,7 @@ def incoming_sms():
         chase_resp = bud.Current_Amounts(False)
         client.messages.create(body=chase_resp,from_=twilio_number, to=fmo)
 
-    # return str(resp)
+    return "Finished"
 
 @app.route("/")
 def hello():

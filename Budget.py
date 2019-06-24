@@ -2,10 +2,10 @@
 
 import yaml
 from pathlib import Path
-from datetime import date, timedelta, datetime
+import datetime
 
 # Creates the current date object
-CURRENT_DATETIME = date.today()
+CURRENT_DATETIME = datetime.date.today()
 
 # Formats the date for filename
 CURRENT_DATE = CURRENT_DATETIME.strftime("%b-%d-%Y")
