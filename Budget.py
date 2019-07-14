@@ -5,7 +5,7 @@ from pathlib import Path
 import datetime
 
 # Creates the current date object
-CURRENT_DATETIME = datetime.date.today()
+CURRENT_DATETIME = datetime.datetime.today() - datetime.timedelta(hours = 5)
 
 # Formats the date for filename
 CURRENT_DATE = CURRENT_DATETIME.strftime("%b-%d-%Y")
@@ -21,14 +21,12 @@ LAST_SUNDAY_DATE = LAST_SUNDAY.strftime("%b-%d-%Y")
 # Creates the final file with extension string
 SUNDAY_DATE_YAML = LAST_SUNDAY_DATE + ".yaml"
 
-GROCERIES_WK_BUDGET = 100
+GROCERIES_WK_BUDGET = 150
 OTHER_WK_BUDGET = 250
 
 class Budget(object):
 
-    FILEPATH = Path.home().joinpath('Documents',
-                                    'f-mo',
-                                    'Twilio_App',
+    FILEPATH = Path.home().joinpath('twilio',
                                     'Weekly_Charges',
                                     f'{SUNDAY_DATE_YAML}')
     def __init__(self, body):
@@ -47,7 +45,7 @@ class Budget(object):
     def Received_Bank_text(self):
         chase_list = self.body.split()
         amount = float(chase_list[6][1:])
-        date = datetime.strptime(chase_list[-11], '%m/%d/%Y')
+        date = datetime.datetime.strptime(chase_list[-11], '%m/%d/%Y')
         business = " ".join(chase_list[8:-12])
         charge_date = date.strftime("%A-%m-%d")
         charges = self.read_from()
@@ -59,7 +57,7 @@ class Budget(object):
         charges = self.read_from()
         grocery_charge = charges[CURRENT_DATE_VAR].pop(-1)
         charges['Groceries'].append(grocery_charge)
-        current_groceries = GROCERIES_WK_BUDGET - sum(charges['Groceries'])
+        current_groceries = round(GROCERIES_WK_BUDGET - sum(charges['Groceries']), 2)
         self.write_to(charges)
         return f'You got ${current_groceries} left for groceries baby'
 
@@ -69,18 +67,29 @@ class Budget(object):
         self.write_to(charges)
         return f'Undid ${undo_charge}'
 
+    def Manual_Entry(self):
+        try:
+          amount = float(self.body.split()[1])
+        except:
+          amount = float(self.body[1:])
+        charges = self.read_from()
+        charges[CURRENT_DATE_VAR].append(amount)
+        self.write_to(charges)
+        return f'Lawd, you spent ${amount}?! Was that for groceries?'
+
     def Current_Amounts(self, grocery):
         self.grocery = grocery
         charges = self.read_from()
         if grocery:
-            current_groceries = GROCERIES_WK_BUDGET - sum(charges['Groceries'])
+            current_groceries = round(GROCERIES_WK_BUDGET - sum(charges['Groceries']), 2)
             return f'You got ${current_groceries} left for groceries baby'
         else:
             current_budget = OTHER_WK_BUDGET - sum([sum(item) for key,item in charges.items()])
             return f'You got ${round(current_budget, 2)} left for the week sugar'
 
-    def Help(self):
-        return u'I am your personal helper \U0001F481'
+    def Help(self, name):
+        self.name = name
+        return u'{}, I am your personal helper \U0001F481'.format(name)
 
     
     # def __str__(self):
